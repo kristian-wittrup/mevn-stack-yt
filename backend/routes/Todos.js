@@ -12,11 +12,11 @@ router.get('/', async (req, res) => {
 router.post('/new', async (req, res) => {
   
   const newTodo = new Todo(
-    // req.body // What the Vue App is sending
-    { // pass in body content to be stored in DB
+    req.body // What the Vue App is sending
+    /* { // pass in body content to be stored in DB
         author:"Flanders", 
         todo:"Go to canada"
-      }
+      } */
   ); 
   const savedTodo = await newTodo.save() // mongo save method
   res.json(savedTodo) // respond with json to our post endpoint
@@ -39,11 +39,11 @@ router.put('/update/:id', async (req, res) => {
   const tUpdate = await Todo.updateOne(
     { _id: req.params.id }, 
     
-    //{ $set: req.body }
-    {
+    { $set: req.body }
+   /*  {
       author: "Bart",
       todo: "Skating"
-    }
+    } */
   )
   res.json(tUpdate)
 })
