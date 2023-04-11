@@ -1,22 +1,13 @@
 <template>
   <div>
     <h1>All Todos</h1>
-
-    <div v-if="state.token">
-      test
-    </div>
-    <div v-else>
-      Nope
-    </div>
-
     <button @click="newTodo()">New Todo - static</button>
     <br>
-    <input type="text" placeholder="Author" v-model="state.name">
-    <span> Test: {{ state.name }} </span>
+    <input type="text" placeholder="Author" v-model="state.newAuthor">
+    <span> Test: {{ state.newAuthor }} </span>
     <br>
-    <input type="text" placeholder="Todo" v-model="state.description">
-    <span> Test: {{ state.description }} </span>
- 
+    <input type="text" placeholder="Todo" v-model="state.newTodoItem">
+    <span> Test: {{ state.newTodoItem }} </span>
 
   <br>
   <br>  
@@ -37,20 +28,18 @@
       <button @click="deleteTodo(todo._id)">Delete todo</button>
       <button @click="editTodo(todo._id)">Edit todo</button>
     </div> -->
-     <div v-for="todo in state.todos" :key="todo.id">
-      <router-link :to="`/todo/${todo.id}`">
+     <div v-for="todo in state.todos" :key="todo._id">
+      <router-link :to="`/todo/${todo._id}`">
         <h4>
-          {{todo.name}}
+          {{todo.author}}
         </h4>
         <p>
-          {{todo.description}}
+          {{todo.todo}}
         </p>
-        <span> Stock: {{ todo.inStock }} </span>
-        <span> Price: {{ todo.price }} </span><br>
         
-        <!-- <button @click="GetSpecificTodo(todo._id)">Edit todo</button> -->
+        <button @click="GetSpecificTodo(todo._id)">Edit todo</button>
       </router-link>
-      <button @click="deleteTodo(todo.id)">Delete todo</button>
+      <button @click="deleteTodo(todo._id)">Delete todo</button>
     </div> 
     
   </div>
@@ -63,7 +52,7 @@ import { onMounted } from 'vue'
   //  export default {
   //    setup() {
 
-      const { state, GetAllTodos, newTodo, deleteTodo, swaggerLogin /* editTodo,  */  } = todocrud()
+      const { state, GetAllTodos, newTodo, deleteTodo, /* editTodo, */ swaggerLogin  } = todocrud()
       // REST API token added: swaggerLogin
 
       onMounted(() => {

@@ -13,19 +13,48 @@ const getTodos = () => {
     newAuthor: '',
     newTodoItem: '',
     todos: {},
-    token:''
+   // token: null // for swaggerLogin
   })
 
-
-
-  // MAKE Navigation Guard
-
+  // swaggerLogin
+  const swaggerLogin = async () => { // REST API token -- login button - send login info for exist user, and grab token
+    try {
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        }, 
+        body: JSON.stringify({
+          email: "kw@easv.dk",
+          password: "12345678"
+        }) 
+      }
+      await fetch("https://men-restapi-easv-s23.onrender.com/api/user/login", requestOptions)
+      .then(res => res.json())
+      .then(data => {
+      // debugger
+        //console.log("token offsite data : ", data.data.token)
+        //state.value.token = data
+        //console.log("token : ", state.value.token)
+        
+       // let lsToken = ref()
+        localStorage.setItem("lsToken", data.data.token);
+        // window.localStorage.setItem('lsToken')
+       // console.log("test lsToken: ", lsToken )
+        //console.log('lsStorage: ', localStorage)
+       // console.log('lsToken: ', localStorage.lsToken)
+      })
+    }
+    catch(error) {
+      console.log(error) 
+    } 
+  }
 
   const GetAllTodos = async () => {
     try {
-      // https://men-restapi-easv-s23.onrender.com/api/products
-      // http://localhost:3000/todos
-       await fetch("https://men-restapi-easv-s23.onrender.com/api/products")
+      // Get SMSJ MEN heroku stack
+      await fetch("https://men-restapi-easv-s23.onrender.com/api/products")
+      // await fetch("http://localhost:3000/todos")
       .then(res => res.json())
       .then(data => {
         state.value.todos = data
@@ -37,69 +66,45 @@ const getTodos = () => {
     }
   }
   
-   const swaggerLogin = async () => {
-    try {
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-       
-        },
-        body: JSON.stringify({
-          email: "kw@easv.dk",
-          password: "12345678"
-        }) 
-      }
-      await fetch("https://men-restapi-easv-s23.onrender.com/api/user/login", requestOptions)
-      .then(res => res.json())
-      .then(data => { 
-        localStorage.setItem("lsToken", data.data.token);
-        // store the token in state.value.token
-        state.value.token = data.data.token
-        
-      })
-    }
-
-    catch(error){
-      console.log(error)
-    }
-
-   }
-
   const newTodo = () => { 
     const requestOptions = {
       method: "POST",
+      // Added headers for SMSJ: MEN onrender.com
       headers: {
         "Content-Type": "application/json",
-        "auth-token": localStorage.lsToken
+        "auth-token": localStorage.lsToken // state.value.token.data.token // REST API token - grab token from online
       },
-      body: JSON.stringify({
+      body: JSON.stringify({ // REST API token
         name: state.value.name,
         description: state.value.description,
         price: 100,
         inStock: true,
-        id: 1
+        id: "1"
       }) 
     }
-      fetch("https://men-restapi-easv-s23.onrender.com/api/products/", 
-      requestOptions
-    )
+      // fetch("http://localhost:3000/todos/new", 
+    fetch("https://men-restapi-easv-s23.onrender.com/api/products/", requestOptions)
     .then(
       GetAllTodos()
     )
   }
-  
 
-  const deleteTodo = (_id) => {
+  
+    const deleteTodo = (_id) => {
     const requestOptions = {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        "auth-token": localStorage.lsToken
-      }
+         "auth-token": localStorage.lsToken
+      },
+      body: JSON.stringify({
+        name: todo.value.name,
+        description: todo.value.description,
+        price: 100,
+        inStock: false
+      }) 
     }
-    fetch("https://men-restapi-easv-s23.onrender.com/api/products/" + _id, 
-    requestOptions)
+    fetch("https://men-restapi-easv-s23.onrender.com/api/products/" + _id, requestOptions)
       .then(GetAllTodos())
   }
 
@@ -108,21 +113,19 @@ const getTodos = () => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "auth-token": localStorage.lsToken
+         "auth-token": localStorage.lsToken
+         // grab token from local storage
       },
       body: JSON.stringify({
         name: todo.value.name,
         description: todo.value.description,
         price: 100,
-        inStock: true,
-        id: 1
+        inStock: false
       }) 
     }
     fetch("https://men-restapi-easv-s23.onrender.com/api/products/" + todoId.value, 
     requestOptions)
-     // .then(GetAllTodos())
-      .then(res =>  res.body ) // redundant
-      .then(res => {console.log(res)}) // redundant
+      .then(/** If you need something to happen put it here */)
       router.push('/todos')
   }
 
@@ -135,14 +138,15 @@ const getTodos = () => {
       fetch("https://men-restapi-easv-s23.onrender.com/api/products/" + todoId.value)
         .then(res =>  res.json() ) 
         .then(data => {
-            todo.value = data  
-          //todo.value = data.filter(t => t._id === todoId.value)
+          //debugger
+            todo.value = data
         })
     }
     catch(error) {
       console.log(error)
     }
   }
+
 
   return {
     todo,
@@ -153,11 +157,12 @@ const getTodos = () => {
     newTodo,
     deleteTodo,
     editTodo,
-    swaggerLogin
+    swaggerLogin  
   }
 }
 
 export default getTodos
+
 
 // import { ref, computed } from 'vue'
 // import { useRoute , useRouter } from 'vue-router'
@@ -173,49 +178,12 @@ export default getTodos
 //   const state = ref({
 //     newAuthor: '',
 //     newTodoItem: '',
-//     todos: {},
-//    // token: null // for swaggerLogin
+//     todos: {}
 //   })
-
-//   // swaggerLogin
-//   const swaggerLogin = async () => { // REST API token -- login button - send login info for exist user, and grab token
-//     try {
-//       const requestOptions = {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//         }, 
-//         body: JSON.stringify({
-//           email: "kw@easv.dk",
-//           password: "12345678"
-//         }) 
-//       }
-//       await fetch("https://smsj-men-restapi.herokuapp.com/api/user/login", requestOptions)
-//       .then(res => res.json())
-//       .then(data => {
-//       // debugger
-//         //console.log("token offsite data : ", data.data.token)
-//         //state.value.token = data
-//         //console.log("token : ", state.value.token)
-        
-//        // let lsToken = ref()
-//         localStorage.setItem("lsToken", data.data.token);
-//         // window.localStorage.setItem('lsToken')
-//        // console.log("test lsToken: ", lsToken )
-//         //console.log('lsStorage: ', localStorage)
-//        // console.log('lsToken: ', localStorage.lsToken)
-//       })
-//     }
-//     catch(error) {
-//       console.log(error) 
-//     } 
-//   }
 
 //   const GetAllTodos = async () => {
 //     try {
-//       // Get SMSJ MEN heroku stack
-//       await fetch("https://smsj-men-restapi.herokuapp.com/api/products")
-//       // await fetch("http://localhost:3000/todos")
+//        await fetch("http://localhost:3000/todos")
 //       .then(res => res.json())
 //       .then(data => {
 //         state.value.todos = data
@@ -230,20 +198,16 @@ export default getTodos
 //   const newTodo = () => { 
 //     const requestOptions = {
 //       method: "POST",
-//       // Added headers for SMSJ: MEN heroku
 //       headers: {
-//         "Content-Type": "application/json",
-//         "auth-token": localStorage.lsToken // state.value.token.data.token // REST API token - grab token from online
+//         "Content-Type": "application/json"
+//         // "auth-token": state.token
 //       },
-//       body: JSON.stringify({ // REST API token
-//         name: state.value.newAuthor,
-//         description: state.value.newTodoItem,
-//         price: 100,
-//         inStock: false
+//       body: JSON.stringify({
+//         author: state.value.newAuthor,
+//         todo: state.value.newTodoItem
 //       }) 
 //     }
-//       // fetch("http://localhost:3000/todos/new", 
-//       fetch("https://smsj-men-restapi.herokuapp.com/api/products",  
+//       fetch("http://localhost:3000/todos/new", 
 //       requestOptions
 //     )
 //     .then(
@@ -303,8 +267,7 @@ export default getTodos
 //     GetAllTodos, 
 //     newTodo,
 //     deleteTodo,
-//     editTodo,
-//     swaggerLogin  
+//     editTodo
 //   }
 // }
 

@@ -1,11 +1,25 @@
 <template>
   <nav>
     <router-link to="/">Home</router-link> |
-    <router-link to="/todos">Todos</router-link> |
-    <router-link to="/about">About</router-link>
+    <router-link to="/todos" v-show="isAuthenticated">Todos</router-link> |
+    <router-link to="/about" >About</router-link> <!-- v-show="userLoggedIn" -->
   </nav>
-  <router-view/>
+  <!-- test login start -->
+    <button @click="logIn()"> Login </button>
+    <button @click="logOut()"> LogOut </button>
+    <p>
+      Logged in: {{ isAuthenticated }}
+    </p>
+  <!-- test login end -->
+   <router-view/>
 </template>
+
+<script setup>
+// Entire setup for login test
+import useUsers from './modules/users'
+
+const {  isAuthenticated,  logIn, logOut } = useUsers()
+</script>
 
 <style lang="scss">
 #app {

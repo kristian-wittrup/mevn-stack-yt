@@ -12,20 +12,12 @@ const getTodos = () => {
   const state = ref({
     newAuthor: '',
     newTodoItem: '',
-    todos: {},
-    token:''
+    todos: {}
   })
-
-
-
-  // MAKE Navigation Guard
-
 
   const GetAllTodos = async () => {
     try {
-      // https://men-restapi-easv-s23.onrender.com/api/products
-      // http://localhost:3000/todos
-       await fetch("https://men-restapi-easv-s23.onrender.com/api/products")
+       await fetch("http://localhost:3000/todos")
       .then(res => res.json())
       .then(data => {
         state.value.todos = data
@@ -37,51 +29,19 @@ const getTodos = () => {
     }
   }
   
-   const swaggerLogin = async () => {
-    try {
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-       
-        },
-        body: JSON.stringify({
-          email: "kw@easv.dk",
-          password: "12345678"
-        }) 
-      }
-      await fetch("https://men-restapi-easv-s23.onrender.com/api/user/login", requestOptions)
-      .then(res => res.json())
-      .then(data => { 
-        localStorage.setItem("lsToken", data.data.token);
-        // store the token in state.value.token
-        state.value.token = data.data.token
-        
-      })
-    }
-
-    catch(error){
-      console.log(error)
-    }
-
-   }
-
   const newTodo = () => { 
     const requestOptions = {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "auth-token": localStorage.lsToken
+        "Content-Type": "application/json"
+        // "auth-token": state.token
       },
       body: JSON.stringify({
-        name: state.value.name,
-        description: state.value.description,
-        price: 100,
-        inStock: true,
-        id: 1
+        author: state.value.newAuthor,
+        todo: state.value.newTodoItem
       }) 
     }
-      fetch("https://men-restapi-easv-s23.onrender.com/api/products/", 
+      fetch("http://localhost:3000/todos/new", 
       requestOptions
     )
     .then(
@@ -91,15 +51,7 @@ const getTodos = () => {
   
 
   const deleteTodo = (_id) => {
-    const requestOptions = {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": localStorage.lsToken
-      }
-    }
-    fetch("https://men-restapi-easv-s23.onrender.com/api/products/" + _id, 
-    requestOptions)
+    fetch("http://localhost:3000/todos/delete/" + _id, { method: "DELETE"})
       .then(GetAllTodos())
   }
 
@@ -107,18 +59,15 @@ const getTodos = () => {
     const requestOptions = {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json",
-        "auth-token": localStorage.lsToken
+        "Content-Type": "application/json"
+        // "auth-token": state.token
       },
       body: JSON.stringify({
-        name: todo.value.name,
-        description: todo.value.description,
-        price: 100,
-        inStock: true,
-        id: 1
+        author: state.value.newAuthor,
+        todo: state.value.newTodoItem
       }) 
     }
-    fetch("https://men-restapi-easv-s23.onrender.com/api/products/" + todoId.value, 
+    fetch("http://localhost:3000/todos/update/" + todoId.value, 
     requestOptions)
      // .then(GetAllTodos())
       .then(res =>  res.body ) // redundant
@@ -132,11 +81,10 @@ const getTodos = () => {
   const todo = ref({})
   const GetSpecificTodo = async () => {
     try {
-      fetch("https://men-restapi-easv-s23.onrender.com/api/products/" + todoId.value)
+      fetch("http://localhost:3000/todos")
         .then(res =>  res.json() ) 
         .then(data => {
-            todo.value = data  
-          //todo.value = data.filter(t => t._id === todoId.value)
+            todo.value = data.filter(t => t._id === todoId.value)
         })
     }
     catch(error) {
@@ -152,8 +100,7 @@ const getTodos = () => {
     GetAllTodos, 
     newTodo,
     deleteTodo,
-    editTodo,
-    swaggerLogin
+    editTodo
   }
 }
 

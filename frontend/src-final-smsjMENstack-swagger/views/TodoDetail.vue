@@ -1,21 +1,13 @@
 <template>
   <div>
     <h1>Editing a ToDo</h1>
-
- <!--    <div v-for="item in todo" :key="item._id">
-      Author:  <p>{{item}}</p>
-      Todo Item: <p>{{item}}</p>
+    <p>{{ todo.name }}</p>
+    <p>{{ todo.description }}</p>
+   <!--  <div v-for="item in todo" :key="item._id">
+      Author: <h4>{{item.name}}</h4>
+      Todo Item: <p>{{item.description}}</p>
     </div> -->
 
-    <div>
-      <p>
-        name: {{ todo.name }}
-      </p>
-      <p>
-        description: {{ todo.description }}
-      </p>
-    </div>
-    
     <hr>
 
     <input type="text" placeholder="Author" v-model="todo.name">
@@ -32,7 +24,6 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
 import todocrud from '../modules/todocrud'
 
 // export default {
@@ -40,10 +31,7 @@ import todocrud from '../modules/todocrud'
 
     const { editTodo, /* state, */ GetSpecificTodo, todo, todoId } = todocrud()
       
-    onMounted(() => {
-      GetSpecificTodo()
-    })
-    //GetSpecificTodo()
+    GetSpecificTodo()
     
     // return { editTodo, state, GetSpecificTodo, todo, todoId  }
 //   }
